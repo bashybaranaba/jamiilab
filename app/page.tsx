@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 import AppNavBar from "./components/layout/AppNavBar";
 import { DrawerHeader } from "./components/layout/DrawerHeader";
 import ProjectsList from "./components/projects/ProjectsList";

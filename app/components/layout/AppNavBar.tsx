@@ -1,6 +1,8 @@
 import * as React from "react";
 import Link from "next/link";
 
+import { Auth } from "@polybase/auth";
+
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -32,6 +34,8 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 
 import { DrawerHeader } from "./DrawerHeader";
 import CreateProject from "../projects/CreateProject";
+
+const auth = typeof window !== "undefined" ? new Auth() : null;
 
 const drawerWidth = 240;
 
@@ -95,9 +99,10 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function AppNavBar() {
+export default async function AppNavBar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [authenticated, setAuthenticated] = React.useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -105,6 +110,16 @@ export default function AppNavBar() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const signIn = async () => {
+    const res = await auth?.signIn();
+    setAuthenticated(true);
+    console.log(res);
+  };
+
+  const signOut = () => {
+    auth?.signOut();
   };
 
   return (
@@ -149,6 +164,13 @@ export default function AppNavBar() {
             JamiiLab
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
+          <Button
+            variant="outlined"
+            sx={{ textTransform: "none", borderRadius: 2 }}
+            onClick={authenticated ? signOut : signIn}
+          >
+            {authenticated ? "Sign out" : "Sign in"}
+          </Button>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -171,7 +193,7 @@ export default function AppNavBar() {
             <ListItem
               key={text}
               component={Link}
-              href={index % 2 === 0 ? "/" : "/"}
+              href={index % 2 === 0 ? "/" : "/projects"}
               disablePadding
               sx={{
                 display: "block",

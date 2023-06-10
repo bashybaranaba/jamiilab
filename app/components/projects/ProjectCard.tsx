@@ -28,19 +28,24 @@ interface Props {
 
 export default function ProjectCard(props: Props) {
   const router = useRouter();
+  const [expanded, setExpanded] = React.useState(false);
 
   const { data } = props;
   //console.log(data);
   const handleClick = (e: any) => {
     e.preventDefault();
-    // router.push(
-    //   `/collections/${data.name.toLowerCase()}-arttcollection-${data.id}`
-    // );
+    router.push(`/projects/slug`);
+  };
+  const handleExpand = (e: any) => {
+    e.preventDefault();
+    setExpanded(!expanded);
   };
   return (
-    <Grid item xs={6} lg={3}>
+    <Grid item xs={12} lg={3}>
       <Card
         elevation={0}
+        onMouseEnter={handleExpand}
+        onMouseLeave={handleExpand}
         sx={{
           m: 1,
           border: 1,
@@ -52,51 +57,45 @@ export default function ProjectCard(props: Props) {
           {/*data.featuredImage ? (
             <CardMedia
               component="img"
-              height="200"
+              height="150"
               image={data.featuredImage}
               alt={data.name}
             />
           ) : (
-            <Box sx={{ height: 200, backgroundColor: "#c5cae9" }} />
+            <Box sx={{ height: 150, backgroundColor: "#c5cae9" }} />
           )*/}
-          <Box sx={{ height: 200, backgroundColor: "#c5cae9" }} />
-        </CardActionArea>
-        <CardContent sx={{ m: 0.5 }}>
-          <Typography variant="body1" component="div" gutterBottom noWrap>
-            project Name
-          </Typography>
-          <Grid container>
-            <Grid item xs={7}>
-              <Box sx={{ display: "flex" }}>
-                <TollOutlinedIcon />
+          <Box
+            sx={{ height: expanded ? 90 : 190, backgroundColor: "#c5cae9" }}
+          />
 
-                <Typography
-                  variant="caption"
-                  component="div"
-                  noWrap
-                  sx={{ m: 0.5 }}
-                >
-                  Price
-                </Typography>
-              </Box>
+          <CardContent sx={{ m: 0.5 }}>
+            <Typography variant="body1" component="div" gutterBottom noWrap>
+              Very very Long project Name
+            </Typography>
+            <Box sx={{ display: expanded ? "block" : "none", height: 100 }}>
+              <Typography variant="caption" component="div" sx={{ m: 0.5 }}>
+                Help us search for extreme types of galaxies in the Fornax
+                Galaxy Cluster!
+              </Typography>
+            </Box>
+
+            <Grid container>
+              <Grid item xs={7}>
+                <Box sx={{ display: "flex" }}></Box>
+              </Grid>
+              <Grid item xs={5}>
+                <Box sx={{ display: "flex" }}>
+                  <Typography
+                    variant="caption"
+                    component="div"
+                    noWrap
+                    sx={{ m: 0.5 }}
+                  ></Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={5}>
-              <Box sx={{ display: "flex" }}>
-                <Tooltip title="Models trained on">
-                  <ModelTrainingIcon sx={{ ml: 4 }} />
-                </Tooltip>
-                <Typography
-                  variant="caption"
-                  component="div"
-                  noWrap
-                  sx={{ m: 0.5 }}
-                >
-                  100
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
+          </CardContent>
+        </CardActionArea>
       </Card>
     </Grid>
   );
