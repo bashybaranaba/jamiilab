@@ -99,7 +99,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default async function AppNavBar() {
+export default function AppNavBar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [authenticated, setAuthenticated] = React.useState(false);
