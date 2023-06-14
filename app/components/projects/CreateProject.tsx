@@ -145,7 +145,7 @@ export default function CreateProject(props: Props) {
               variant="h5"
               component="div"
             >
-              Create a new collection
+              Create a new Project
             </Typography>
             <Box sx={{ width: "100%", mt: 4, mb: 4 }}>
               <Stepper activeStep={activeStep} alternativeLabel>

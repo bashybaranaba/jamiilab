@@ -23,21 +23,21 @@ export default function Projects() {
         <Box sx={{ width: "100%", typography: "body1" }}>
           <Grid container>
             <StatBox
-              text="Total collections"
+              text="Total projects"
               icon={<FilterNoneOutlinedIcon />}
               value={5}
               bgcolor="#e3f2fd"
             />
 
             <StatBox
-              text="Total collections"
+              text="Total contributions"
               icon={<FilterNoneOutlinedIcon />}
               value={5}
               bgcolor="#e3f2fd"
             />
 
             <StatBox
-              text="Total collections"
+              text="Total Achievements"
               icon={<FilterNoneOutlinedIcon />}
               value={5}
               bgcolor="#e3f2fd"

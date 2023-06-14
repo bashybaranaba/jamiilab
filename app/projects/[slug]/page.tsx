@@ -12,12 +12,22 @@ import {
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import ProjectBanner from "@/app/components/projects/ProjectBanner";
+import DatasetPreviewTable from "@/app/components/projects/dataset/DatasetPreview";
 import CreateDataField from "@/app/components/projects/dataforms/CreateDataField";
 
 const dummydata = {
   image: "",
   name: "Test Project",
   headline: "Test Headline",
+
+  columns: [
+    { field: "name", headerName: "Name" },
+    { field: "age", headerName: "Age" },
+  ],
+  rows: [
+    { id: 1, name: "John", age: 20 },
+    { id: 2, name: "Jane", age: 30 },
+  ],
 };
 export default function Projects() {
   const [value, setValue] = useState("1");
@@ -38,7 +48,7 @@ export default function Projects() {
                 component="div"
                 sx={{ ml: 2, mt: 2, mb: -4, color: "#263238" }}
               >
-                JamiiLab
+                Project Name
               </Typography>
               <TabList
                 onChange={handleChange}
@@ -51,8 +61,18 @@ export default function Projects() {
                   sx={{ textTransform: "none", mr: 2, ml: 2 }}
                 />
                 <Tab
-                  label="Test"
+                  label="Dataset"
                   value="2"
+                  sx={{ textTransform: "none", mr: 2, ml: 2 }}
+                />
+                <Tab
+                  label="Data Fields"
+                  value="3"
+                  sx={{ textTransform: "none", mr: 2, ml: 2 }}
+                />
+                <Tab
+                  label="Forum"
+                  value="4"
                   sx={{ textTransform: "none", mr: 2, ml: 2 }}
                 />
               </TabList>
@@ -60,12 +80,27 @@ export default function Projects() {
           </Box>
           <Box sx={{ mt: 6 }}>
             <TabPanel value="1">
-              <ProjectBanner projectData={dummydata} />
+              <Container maxWidth="lg">
+                <ProjectBanner projectData={dummydata} />
+              </Container>
             </TabPanel>
             <TabPanel value="2">
               <Container maxWidth="md">
+                <Box sx={{ mt: 2 }}>
+                  <DatasetPreviewTable
+                    columns={dummydata.columns}
+                    rows={dummydata.rows}
+                  />
+                </Box>
+              </Container>
+            </TabPanel>
+            <TabPanel value="3">
+              <Container maxWidth="md">
                 <CreateDataField />
               </Container>
+            </TabPanel>
+            <TabPanel value="4">
+              <Container maxWidth="md">Coming soon</Container>
             </TabPanel>
           </Box>
         </TabContext>

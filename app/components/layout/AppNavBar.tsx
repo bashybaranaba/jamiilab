@@ -31,6 +31,7 @@ import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import BubbleChartOutlinedIcon from "@mui/icons-material/BubbleChartOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
 
 import { DrawerHeader } from "./DrawerHeader";
 import CreateProject from "../projects/CreateProject";
@@ -253,10 +254,10 @@ export default function AppNavBar() {
                   justifyContent: "center",
                 }}
               >
-                <CardMembershipIcon />
+                <EmojiEventsOutlinedIcon />
               </ListItemIcon>
               <ListItemText
-                primary={"Certificates"}
+                primary={"Achievements"}
                 sx={{ opacity: open ? 1 : 0 }}
               />
             </ListItemButton>
