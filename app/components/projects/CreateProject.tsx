@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Polybase } from "@polybase/client";
 
-//import { Web3Storage } from "web3.storage";
+import { db } from "../../../lib/polybase_init";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -16,13 +17,14 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
+import TextField from "@mui/material/TextField";
 import { TransitionProps } from "@mui/material/transitions";
 
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import AddIcon from "@mui/icons-material/Add";
+
+import ImageUpload from "../util/ImageUpload";
+import { CardMedia, Paper } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -46,22 +48,11 @@ export default function CreateProject(props: Props) {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg2YWIyOTRhMTQ1RThENkU0ZDFCNmNlRTcwODAxZGNDMTkyOWQ5NzkiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2Nzc5Mzg1Mjg3MTQsIm5hbWUiOiJGb2xpb2hvdXNlIn0.2mttZrpJ6UBXcJwqr28iUb1rV8cqR5Y0MuxhZp-h9n4";
 
   const [open, setOpen] = React.useState(false);
-  const [activeStep, setActiveStep] = React.useState(1);
-  const [next, setNext] = React.useState(false);
-  const [finish, setFinish] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-
   const [name, setName] = React.useState("");
-  const [files, setFiles] = React.useState<File[]>([]);
-  const [price, setPrice] = React.useState<number>(0);
+  const [headline, setHeadline] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [image, setImage] = React.useState(null);
-
-  useEffect(() => {
-    if (activeStep === steps.length) {
-      setFinish(true);
-    }
-  }, [activeStep]);
+  const [imageUri, setImageUri] = React.useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -71,18 +62,23 @@ export default function CreateProject(props: Props) {
     setOpen(false);
   };
 
-  const handleNext = () => {
-    const nextStep = activeStep + 1;
-    setActiveStep(nextStep);
-  };
+  async function CreateProject() {
+    const collectionReference = db.collection("Project");
 
-  const handleBack = () => {
-    const nextStep = activeStep - 1;
-    setActiveStep(nextStep);
-    setFinish(false);
-  };
-
-  async function CreateArtCollection() {}
+    try {
+      setLoading(true);
+      const recordData = await collectionReference.create([
+        "project-1",
+        name,
+        headline,
+      ]);
+      console.log(recordData);
+      setLoading(false);
+      handleClose();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div>
@@ -110,7 +106,6 @@ export default function CreateProject(props: Props) {
         onClick={handleClickOpen}
         startIcon={<AddIcon />}
         sx={{
-          m: 2,
           textTransform: "none",
           display: minimized ? "none" : "flex",
         }}
@@ -133,7 +128,7 @@ export default function CreateProject(props: Props) {
             <CloseIcon />
           </IconButton>
         </Toolbar>
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" sx={{ mt: -6 }}>
           <Grid
             container
             direction="column"
@@ -147,52 +142,63 @@ export default function CreateProject(props: Props) {
             >
               Create a new Project
             </Typography>
-            <Box sx={{ width: "100%", mt: 4, mb: 4 }}>
-              <Stepper activeStep={activeStep} alternativeLabel>
-                {steps.map((label) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Box>
-            {activeStep === 1 ? <p>Step 1</p> : null}
-            {activeStep === 2 ? <p>Step 2</p> : null}
-            {activeStep === 3 ? <p>Step 3</p> : null}
-            <Grid container spacing={2}>
-              <Grid item xs={activeStep === 1 ? 0 : 6}>
-                {activeStep !== 1 ? (
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    component="label"
-                    sx={{ textTransform: "none", mt: 2 }}
-                    onClick={handleBack}
-                  >
-                    Back
-                  </Button>
-                ) : null}
-              </Grid>
-              <Grid item xs={activeStep === 1 ? 12 : 6}>
-                <Button
+
+            {imageUri && (
+              <CardMedia
+                component="img"
+                height="130"
+                image={imageUri}
+                sx={{ mt: 2, borderRadius: 3 }}
+              />
+            )}
+            <Grid container>
+              <Grid item xs={10} lg={10}>
+                <TextField
+                  variant="outlined"
+                  label="Project Name"
                   fullWidth
-                  variant="contained"
-                  component="label"
-                  sx={{ textTransform: "none", mt: 2 }}
-                  onClick={finish ? CreateArtCollection : handleNext}
-                  disabled={files.length < 1 || !name}
-                >
-                  {finish ? (
-                    loading ? (
-                      <CircularProgress size={25} sx={{ color: "#fff" }} />
-                    ) : (
-                      "Finish"
-                    )
-                  ) : (
-                    "Next"
-                  )}
-                </Button>
+                  sx={{ mt: 2 }}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </Grid>
+              <Grid item xs={2} lg={2}>
+                <Box sx={{ ml: 2, mt: 2 }}>
+                  <ImageUpload setImageUri={setImageUri} />
+                </Box>
+              </Grid>
+
+              <TextField
+                variant="outlined"
+                label="Project Headline"
+                fullWidth
+                multiline
+                rows={2}
+                sx={{ mt: 2 }}
+                onChange={(e) => setHeadline(e.target.value)}
+              />
+              <TextField
+                variant="outlined"
+                label="Project Description"
+                fullWidth
+                multiline
+                rows={8}
+                sx={{ mt: 2 }}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                component="label"
+                sx={{ textTransform: "none", mt: 2 }}
+                onClick={CreateProject}
+                disabled={!name || !headline}
+              >
+                {loading ? (
+                  <CircularProgress size={25} sx={{ color: "#fff" }} />
+                ) : (
+                  "Create Project"
+                )}
+              </Button>
             </Grid>
           </Grid>
         </Container>

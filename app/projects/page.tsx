@@ -18,7 +18,7 @@ export default function Projects() {
   return (
     <Box sx={{ display: "flex" }}>
       <AppNavBar />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 5 }}>
         <DrawerHeader />
         <Box sx={{ width: "100%", typography: "body1" }}>
           <Grid container>
