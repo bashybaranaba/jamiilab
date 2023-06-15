@@ -41,15 +41,8 @@ export default function OptionsEditor(props: Props) {
 
   const [option, setOption] = useState("");
   const [registered, setRegistered] = useState(false);
-
-  const handleOptionChange = (event: any) => {
-    setOption(event.target.value);
-    setRegistered(false);
-    removeOption(option);
-  };
+  const [finished, setFinished] = useState(false);
   const remove = () => {
-    setRegistered(false);
-    setOption("");
     removeOption(option);
     removeOptionField();
   };
@@ -58,9 +51,16 @@ export default function OptionsEditor(props: Props) {
     setOption("");
     removeOption(option);
   };
-  const registerOption = () => {
+  const addAnotherOption = () => {
+    getOption(option);
+    addOption();
+    setRegistered(true);
+  };
+
+  const getFinalOption = () => {
     getOption(option);
     setRegistered(true);
+    setFinished(true);
   };
 
   const retainRegistered = () => {
@@ -74,16 +74,10 @@ export default function OptionsEditor(props: Props) {
         <TextField
           label={`Option ${index}`}
           variant="standard"
-          onChange={handleOptionChange}
+          onChange={(e) => setOption(e.target.value)}
+          disabled={registered}
           value={option}
         />
-        <IconButton
-          aria-label="remove option"
-          sx={{ color: "action.active", mb: -1 }}
-          onClick={!registered ? registerOption : retainRegistered}
-        >
-          <CheckOutlinedIcon color={registered ? "success" : "inherit"} />
-        </IconButton>
 
         <IconButton
           aria-label="remove option"
@@ -93,13 +87,22 @@ export default function OptionsEditor(props: Props) {
           <ClearOutlinedIcon />
         </IconButton>
 
-        {index === instances ? (
+        {index === instances && !finished ? (
           <IconButton
             aria-label="add option"
             sx={{ color: "action.active", mb: -1 }}
-            onClick={addOption}
+            onClick={addAnotherOption}
           >
             <AddCircleOutlineOutlinedIcon />
+          </IconButton>
+        ) : null}
+        {index === instances && instances > 1 ? (
+          <IconButton
+            aria-label="remove option"
+            sx={{ color: "action.active", mb: -1 }}
+            onClick={getFinalOption}
+          >
+            <CheckOutlinedIcon color={registered ? "success" : "inherit"} />
           </IconButton>
         ) : null}
       </Box>

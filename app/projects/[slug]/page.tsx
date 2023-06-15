@@ -13,7 +13,9 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import ProjectBanner from "@/app/components/projects/ProjectBanner";
 import DatasetPreviewTable from "@/app/components/projects/dataset/DatasetPreview";
+import EditDataField from "@/app/components/projects/dataforms/EditDataField";
 import CreateDataField from "@/app/components/projects/dataforms/CreateDataField";
+import DataFields from "@/app/components/projects/dataforms/DataFields";
 
 const dummydata = {
   image: "",
@@ -31,10 +33,32 @@ const dummydata = {
 };
 export default function Projects() {
   const [value, setValue] = useState("1");
+  const [datafields, setDatafields] = useState<any>([]);
+  const [datafieldsCount, setDatafieldsCount] = useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     event.preventDefault();
     setValue(newValue);
+  };
+
+  //Datafield functions
+  const getOption = (option: string) => {
+    setOptions([...options, option]);
+  };
+
+  const addOption = () => {
+    const numberOfOptions = optionsCount + 1;
+    setOptionCount(numberOfOptions);
+  };
+
+  const removeOption = (option: string) => {
+    const filteredOptions = options.filter((item: string) => item !== option);
+    setOptions(filteredOptions);
+  };
+
+  const removeOptionField = () => {
+    const numberOfOptions = optionsCount - 1;
+    setOptionCount(numberOfOptions);
   };
   return (
     <Box>
@@ -96,7 +120,7 @@ export default function Projects() {
             </TabPanel>
             <TabPanel value="3">
               <Container maxWidth="md">
-                <CreateDataField />
+                <DataFields />
               </Container>
             </TabPanel>
             <TabPanel value="4">

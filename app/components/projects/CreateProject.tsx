@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Polybase } from "@polybase/client";
-
-import { db } from "../../../lib/polybase_init";
+import { db } from "@/lib/polybase_init";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -25,6 +23,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 import ImageUpload from "../util/ImageUpload";
 import { CardMedia, Paper } from "@mui/material";
+import { generateUniqueId } from "@/app/components/util/GenerateUniqueId";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -64,13 +63,17 @@ export default function CreateProject(props: Props) {
 
   async function CreateProject() {
     const collectionReference = db.collection("Project");
-
+    const members: any[] = [];
     try {
       setLoading(true);
       const recordData = await collectionReference.create([
-        "project-1",
+        generateUniqueId(),
+        "12345678901234567890",
         name,
         headline,
+        description,
+        imageUri,
+        members,
       ]);
       console.log(recordData);
       setLoading(false);

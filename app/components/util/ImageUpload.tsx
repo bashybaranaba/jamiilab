@@ -34,7 +34,7 @@ export default function ImageUpload(props: Props) {
   return (
     <div>
       <label htmlFor="fileInput">
-        <Tooltip title="upload image">
+        <Tooltip title="add image">
           <Fab
             aria-label="upload media"
             size="large"
