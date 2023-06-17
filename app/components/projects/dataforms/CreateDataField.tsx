@@ -53,7 +53,8 @@ export default function CreateDataField(props: Props) {
               your project.
             </Typography>
             <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-              Click add data field to start creating your project's data fields.
+              Click add data field to start creating data fields for your
+              project.
             </Typography>
           </Grid>
           <Grid item xs={12} lg={3}>
