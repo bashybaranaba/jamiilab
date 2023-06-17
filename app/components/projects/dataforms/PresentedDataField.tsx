@@ -41,6 +41,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ImageUpload from "../../util/ImageUpload";
 import NoneEditable from "./fieldeditors/NoneEditable";
 import { generateUniqueId } from "@/app/components/util/GenerateUniqueId";
+import FileUpload from "../../util/FileUpload";
 
 interface Props {
   fieldData: {
@@ -176,7 +177,7 @@ export default function PresentedDataField(props: Props) {
               </Box>
             ) : null}
             {fieldData.type === "fileUpload" ? (
-              <NoneEditable text="File upload" icon={<UploadFileIcon />} />
+              <FileUpload setFileUri={getFieldValues} fieldId={fieldData.id} />
             ) : null}
             {fieldData.type === "date" ? (
               <NoneEditable text="Date " icon={<EventOutlinedIcon />} />
