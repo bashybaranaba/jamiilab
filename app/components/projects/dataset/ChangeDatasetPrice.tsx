@@ -101,7 +101,7 @@ export default function ChangeDatasetPrice(props: Props) {
             The overal price of the dataset is calculated by multiplying the
             price per datapoint by the number of datapoints in the dataset. For
             example, if the price per datapoint is 0.1 and the dataset has 100
-            datapoints, the price will be 10. For this projects' dataset, the
+            datapoints, the price will be 10. For the project dataset, the
             overal price is {price} X {datapoints} datapoints = {overallPrice}
           </Typography>
           <Typography sx={{ fontWeight: 600 }} variant="body1" component="div">
