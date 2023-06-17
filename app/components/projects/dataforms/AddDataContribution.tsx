@@ -12,9 +12,11 @@ import Grid from "@mui/material/Grid";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Slide from "@mui/material/Slide";
+import Typography from "@mui/material/Typography";
 import { TransitionProps } from "@mui/material/transitions";
 
 import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { generateUniqueId } from "@/app/components/util/GenerateUniqueId";
 import PresentedDataField from "./PresentedDataField";
