@@ -1,4 +1,6 @@
 "use client";
+import { useCollection } from "@polybase/react";
+import { db } from "@/lib/polybase_init";
 
 import { Box, Divider, Grid, Typography } from "@mui/material";
 import AppNavBar from "./components/layout/AppNavBar";
@@ -6,6 +8,12 @@ import { DrawerHeader } from "./components/layout/DrawerHeader";
 import ProjectsList from "./components/projects/ProjectsList";
 
 export default function Home() {
+  const query = db.collection("Project").sort("id", "desc");
+  const { data, error, loading } = useCollection(query);
+
+  const projects: any = data?.data;
+
+  console.log(projects);
   return (
     <Box sx={{ display: "flex" }}>
       <AppNavBar />
@@ -75,7 +83,7 @@ export default function Home() {
           </Grid>
           <br />
           <br />
-          <ProjectsList projets={[1, 2, 3, 4]} />
+          <ProjectsList projects={projects} />
         </Box>
       </Box>
     </Box>

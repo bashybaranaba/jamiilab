@@ -45,7 +45,7 @@ contract CitizenScienceRewards {
     function addContributor(uint256 _projectId) external {
         //require(projects[_projectId-1].exists, "Project does not exist");
         Project storage project = projects[_projectId-1];
-        require(msg.sender != project.creator, "Owner cannot be a contributor");
+        //require(msg.sender != project.creator, "Owner cannot be a contributor");
 
         for (uint256 i = 0; i < project.contributors.length; i++) {
             require(project.contributors[i] != msg.sender, "Contributor already exists");
@@ -94,6 +94,17 @@ contract CitizenScienceRewards {
     function getProject(uint256 _projectId) public view returns (Project memory) {
         return projects[_projectId-1];
     }
+
+    //get project id by projectData
+    function getProjectBlockId(string memory _projectData) public view returns (uint256) {
+        for (uint256 i = 0; i < projects.length; i++) {
+            if (keccak256(abi.encodePacked(projects[i].projectData)) == keccak256(abi.encodePacked(_projectData))) {
+                return i+1;
+            }
+        }
+        return 0;
+    }
+    
 
     function getProjects() public view returns (Project[] memory) {
         return projects;

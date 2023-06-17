@@ -1,7 +1,8 @@
 import * as React from "react";
 import Link from "next/link";
 
-import { Auth } from "@polybase/auth";
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
 
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -35,8 +36,6 @@ import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
 
 import { DrawerHeader } from "./DrawerHeader";
 import CreateProject from "../projects/CreateProject";
-
-const auth = typeof window !== "undefined" ? new Auth() : null;
 
 const drawerWidth = 240;
 
@@ -103,6 +102,7 @@ const Drawer = styled(MuiDrawer, {
 export default function AppNavBar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [loadingAuth, setLoadingAuth] = React.useState(false);
   const [authenticated, setAuthenticated] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -113,14 +113,17 @@ export default function AppNavBar() {
     setOpen(false);
   };
 
-  const signIn = async () => {
-    const res = await auth?.signIn();
+  const handleWalletConnect = async () => {
+    setLoadingAuth(true);
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    console.log("Wallet connect");
+    console.log("Address: ", address);
     setAuthenticated(true);
-    console.log(res);
-  };
-
-  const signOut = () => {
-    auth?.signOut();
+    setLoadingAuth(false);
   };
 
   return (
@@ -167,10 +170,18 @@ export default function AppNavBar() {
           <Box sx={{ flexGrow: 1 }} />
           <Button
             variant="outlined"
-            sx={{ textTransform: "none", borderRadius: 2 }}
-            onClick={authenticated ? signOut : signIn}
+            sx={{ textTransform: "none", borderRadius: 1, width: 150 }}
+            onClick={handleWalletConnect}
           >
-            {authenticated ? "Sign out" : "Sign in"}
+            {!authenticated ? (
+              loadingAuth ? (
+                <CircularProgress size={20} sx={{ color: "#fff" }} />
+              ) : (
+                "Connect wallet"
+              )
+            ) : (
+              "Connected"
+            )}
           </Button>
         </Toolbar>
       </AppBar>

@@ -26,6 +26,7 @@ interface Props {
   instances: number;
   index: number;
   icon: any;
+  optionData: string;
 }
 
 export default function OptionsEditor(props: Props) {
@@ -37,9 +38,10 @@ export default function OptionsEditor(props: Props) {
     instances,
     index,
     icon,
+    optionData,
   } = props;
 
-  const [option, setOption] = useState("");
+  const [option, setOption] = useState(optionData);
   const [registered, setRegistered] = useState(false);
   const [finished, setFinished] = useState(false);
   const remove = () => {

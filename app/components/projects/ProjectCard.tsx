@@ -16,13 +16,12 @@ import ModelTrainingIcon from "@mui/icons-material/ModelTraining";
 import TollOutlinedIcon from "@mui/icons-material/TollOutlined";
 interface Props {
   data: {
-    // id: number;
-    // name: string;
-    // totalAttributions: number;
-    // totalArtworks: number;
-    // price: number;
-    // creator: string;
-    // featuredImage: string;
+    id: string;
+    name: string;
+    about: string;
+    owner: string;
+    headline: string;
+    feature_image: string;
   };
 }
 
@@ -34,7 +33,7 @@ export default function ProjectCard(props: Props) {
   //console.log(data);
   const handleClick = (e: any) => {
     e.preventDefault();
-    router.push(`/projects/slug`);
+    router.push(`/projects/${data.name}-lab${data.id}`);
   };
   const handleExpand = (e: any) => {
     e.preventDefault();
@@ -54,28 +53,26 @@ export default function ProjectCard(props: Props) {
         }}
       >
         <CardActionArea onClick={handleClick}>
-          {/*data.featuredImage ? (
+          {data.feature_image ? (
             <CardMedia
               component="img"
-              height="150"
-              image={data.featuredImage}
+              height={expanded ? "90" : "200"}
+              image={data.feature_image}
               alt={data.name}
             />
           ) : (
-            <Box sx={{ height: 150, backgroundColor: "#c5cae9" }} />
-          )*/}
-          <Box
-            sx={{ height: expanded ? 90 : 200, backgroundColor: "#c5cae9" }}
-          />
+            <Box
+              sx={{ height: expanded ? 90 : 200, backgroundColor: "#c5cae9" }}
+            />
+          )}
 
           <CardContent sx={{ m: 0.5 }}>
             <Typography variant="body1" component="div" gutterBottom noWrap>
-              Very very Long project Name
+              {data.name}
             </Typography>
             <Box sx={{ display: expanded ? "block" : "none", height: 110 }}>
               <Typography variant="caption" component="div" sx={{ m: 0.5 }}>
-                Help us search for extreme types of galaxies in the Fornax
-                Galaxy Cluster!
+                {data.headline}
               </Typography>
             </Box>
 

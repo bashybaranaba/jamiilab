@@ -14,9 +14,21 @@ import DatasetPreviewTable from "@/app/components/projects/dataset/DatasetPrevie
 import EditDataField from "@/app/components/projects/dataforms/EditDataField";
 import CreateDataField from "@/app/components/projects/dataforms/CreateDataField";
 
-export default function DataFields() {
-  const [datafields, setDatafields] = useState<any>([]);
-  const [datafieldsCount, setDatafieldsCount] = useState(0);
+interface Props {
+  savedDatafields: any;
+  error: any;
+  projectId: string;
+}
+
+export default function DataFields(props: Props) {
+  const { savedDatafields, error, projectId } = props;
+
+  const [datafields, setDatafields] = useState<any>(
+    !error ? savedDatafields : []
+  );
+  const [datafieldsCount, setDatafieldsCount] = useState(
+    !error ? savedDatafields.length : 0
+  );
 
   //Datafield functions
   const getField = (datafield: object) => {
@@ -54,9 +66,14 @@ export default function DataFields() {
                 <EditDataField
                   getField={getField}
                   addField={addField}
-                  removeField={removeField}
+                  removeField={removeDataField}
                   instances={datafieldsCount}
                   index={i}
+                  projectId={projectId}
+                  fieldData={
+                    savedDatafields[i - 1] ? savedDatafields[i - 1].data : null
+                  }
+                  key={i}
                 />
               );
             }

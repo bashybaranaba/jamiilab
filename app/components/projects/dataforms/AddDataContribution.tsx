@@ -23,9 +23,9 @@ import { TransitionProps } from "@mui/material/transitions";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import AddIcon from "@mui/icons-material/Add";
 
-import ImageUpload from "../util/ImageUpload";
 import { CardMedia, Paper } from "@mui/material";
 import { generateUniqueId } from "@/app/components/util/GenerateUniqueId";
+import PresentedDataField from "./PresentedDataField";
 
 import { CitizenScienceRewardsAddress } from "@/lib/config.js";
 import CitizenScienceRewards from "@/lib/CitizenScienceRewards.json";
@@ -39,24 +39,28 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const steps = ["Upload files", "Add details", "Confirm details"];
-
 interface Props {
-  minimized: boolean;
+  userAddress: string;
+  projectData: {
+    id: string;
+    owner: string;
+    members: string[];
+  };
+  formFields: any;
 }
 
-export default function CreateProject(props: Props) {
-  const { minimized } = props;
-  const router = useRouter();
-  const storageToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg2YWIyOTRhMTQ1RThENkU0ZDFCNmNlRTcwODAxZGNDMTkyOWQ5NzkiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2Nzc5Mzg1Mjg3MTQsIm5hbWUiOiJGb2xpb2hvdXNlIn0.2mttZrpJ6UBXcJwqr28iUb1rV8cqR5Y0MuxhZp-h9n4";
-
+export default function AddDataContribution(props: Props) {
+  const { userAddress, projectData, formFields } = props;
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [name, setName] = React.useState("");
-  const [headline, setHeadline] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [imageUri, setImageUri] = React.useState("");
+  const [dataValues, setDataValues] = React.useState({});
+  const [dataAdded, setDataAdded] = React.useState(false);
+
+  useEffect(() => {
+    if (Object.keys(dataValues).length > 0) {
+      setDataAdded(true);
+    }
+  }, [dataValues]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -66,13 +70,14 @@ export default function CreateProject(props: Props) {
     setOpen(false);
   };
 
-  async function CreateProject() {
+  async function addMember() {
     setLoading(true);
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
     const signerAddress = await signer.getAddress();
+    const newMembersList = [...projectData.members, signerAddress];
     const collectionReference = db.collection("Project");
 
     let contract = new ethers.Contract(
@@ -80,21 +85,53 @@ export default function CreateProject(props: Props) {
       CitizenScienceRewards.abi,
       signer
     );
-
     try {
-      const members: any[] = [];
-      const projectDetails = await collectionReference.create([
+      const editData = await collectionReference
+        .record(projectData.id)
+        .call("updateMembers", [newMembersList]);
+      console.log(editData);
+      const projectBlockId = await contract.getProjectBlockId(projectData.id);
+      await contract.addContributor(projectBlockId.toNumber());
+      setLoading(false);
+      handleClose();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const getFieldValues = (value: any, id: any) => {
+    setDataValues({ ...dataValues, [id]: value });
+  };
+
+  console.log(dataValues);
+
+  async function SubmitData() {
+    setLoading(true);
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const collectionReference = db.collection("DataContribution");
+
+    let contract = new ethers.Contract(
+      CitizenScienceRewardsAddress,
+      CitizenScienceRewards.abi,
+      signer
+    );
+    try {
+      const dataContribution = await collectionReference.create([
         generateUniqueId(),
-        signerAddress,
-        name,
-        headline,
-        description,
-        imageUri,
-        members,
-        0,
+        projectData.id,
+        Object.keys(dataValues),
+        Object.values(dataValues),
       ]);
-      console.log(projectDetails.data.id);
-      await contract.createProject(projectDetails.data.id);
+      console.log(dataContribution.data.id);
+      const projectBlockId = await contract.getProjectBlockId(projectData.id);
+      await contract.contribute(
+        projectBlockId.toNumber(),
+        Object.keys(dataValues).length,
+        dataContribution.data.id
+      );
       setLoading(false);
       handleClose();
     } catch (error) {
@@ -104,36 +141,33 @@ export default function CreateProject(props: Props) {
 
   return (
     <div>
-      <ListItemButton
-        onClick={handleClickOpen}
-        sx={{
-          display: minimized ? "block" : "none",
-          justifyContent: "center",
-          px: 2.0,
-        }}
-      >
-        <ListItemIcon
-          sx={{
-            color: "#283593",
-            minWidth: 0,
-            mr: "auto",
-            justifyContent: "center",
-          }}
-        >
-          <AddBoxIcon sx={{ fontSize: 32 }} />
-        </ListItemIcon>
-      </ListItemButton>
-      <Button
-        variant="contained"
-        onClick={handleClickOpen}
-        startIcon={<AddIcon />}
-        sx={{
-          textTransform: "none",
-          display: minimized ? "none" : "flex",
-        }}
-      >
-        Create new project
-      </Button>
+      <Box>
+        {projectData.members.includes(userAddress) ? (
+          <Button
+            variant="contained"
+            onClick={handleClickOpen}
+            startIcon={<AddIcon />}
+            sx={{
+              textTransform: "none",
+            }}
+          >
+            Add data to the project
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={addMember}
+            startIcon={<AddIcon />}
+            sx={{
+              textTransform: "none",
+            }}
+          >
+            {projectData.owner === userAddress
+              ? "Start adding data to the project"
+              : "Join to add data to the project"}
+          </Button>
+        )}
+      </Box>
       <Dialog
         fullScreen
         open={open}
@@ -162,63 +196,29 @@ export default function CreateProject(props: Props) {
               variant="h5"
               component="div"
             >
-              Create a new Project
+              Add data to the project
             </Typography>
 
-            {imageUri && (
-              <CardMedia
-                component="img"
-                height="130"
-                image={imageUri}
-                sx={{ mt: 2, borderRadius: 3 }}
+            {formFields.map((field: any) => (
+              <PresentedDataField
+                fieldData={field.data}
+                getFieldValues={getFieldValues}
               />
-            )}
-            <Grid container>
-              <Grid item xs={10} lg={10}>
-                <TextField
-                  variant="outlined"
-                  label="Project Name"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={2} lg={2}>
-                <Box sx={{ ml: 2, mt: 2 }}>
-                  <ImageUpload setImageUri={setImageUri} />
-                </Box>
-              </Grid>
+            ))}
 
-              <TextField
-                variant="outlined"
-                label="Project Headline"
-                fullWidth
-                multiline
-                rows={2}
-                sx={{ mt: 2 }}
-                onChange={(e) => setHeadline(e.target.value)}
-              />
-              <TextField
-                variant="outlined"
-                label="Project Description"
-                fullWidth
-                multiline
-                rows={8}
-                sx={{ mt: 2 }}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+            <Grid container>
               <Button
                 fullWidth
                 variant="contained"
                 component="label"
                 sx={{ textTransform: "none", mt: 2 }}
-                onClick={CreateProject}
-                disabled={!name || !headline}
+                onClick={SubmitData}
+                disabled={!dataAdded}
               >
                 {loading ? (
                   <CircularProgress size={25} sx={{ color: "#fff" }} />
                 ) : (
-                  "Create Project"
+                  "Submit Data"
                 )}
               </Button>
             </Grid>

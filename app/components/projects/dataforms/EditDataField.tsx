@@ -44,18 +44,46 @@ interface Props {
   removeField: any;
   instances: number;
   index: number;
+  projectId: string;
+  fieldData: {
+    id: string;
+    image: string;
+    instruction: string;
+    name: string;
+    options: any;
+    project_id: string;
+    type: string;
+  };
 }
 
 export default function EditDataField(props: Props) {
-  const { getField, addField, removeField, instances, index } = props;
+  const {
+    getField,
+    addField,
+    removeField,
+    instances,
+    index,
+    projectId,
+    fieldData,
+  } = props;
 
-  const [fieldId, setFieldId] = useState("");
-  const [fieldType, setFieldType] = useState("shortAnswer");
-  const [name, setName] = useState("");
-  const [instruction, setInstruction] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [options, setOptions] = useState<any>([]);
-  const [optionsCount, setOptionCount] = useState<number>(1);
+  console.log("FieldData", fieldData);
+
+  const [fieldId, setFieldId] = useState(fieldData ? fieldData.id : "");
+  const [fieldType, setFieldType] = useState(
+    fieldData ? fieldData.type : "shortAnswer"
+  );
+  const [name, setName] = useState(fieldData ? fieldData.name : "");
+  const [instruction, setInstruction] = useState(
+    fieldData ? fieldData.instruction : ""
+  );
+  const [imageUrl, setImageUrl] = useState(fieldData ? fieldData.image : "");
+  const [options, setOptions] = useState<any>(
+    fieldData ? fieldData.options : []
+  );
+  const [optionsCount, setOptionCount] = useState<number>(
+    fieldData ? fieldData.options.length : 1
+  );
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -92,6 +120,7 @@ export default function EditDataField(props: Props) {
     const field_id = fieldId ? fieldId : generateUniqueId();
     const fieldDetails = {
       id: field_id,
+      project_id: projectId,
       field_name: name,
       field_type: fieldType,
       instruction: instruction,
@@ -100,18 +129,38 @@ export default function EditDataField(props: Props) {
     };
     getField(fieldDetails);
 
-    const recordData = await collectionReference.create([
-      field_id,
-      "1686858280324-1063",
-      name,
-      fieldType,
-      instruction,
-      imageUrl,
-      options,
-    ]);
-    console.log(recordData);
+    if (!fieldId) {
+      const recordData = await collectionReference.create([
+        field_id,
+        projectId,
+        name,
+        fieldType,
+        instruction,
+        imageUrl,
+        options,
+      ]);
+      console.log(recordData);
+    } else {
+      const editData = await collectionReference
+        .record(fieldId)
+        .call("updateField", [name, fieldType, instruction, imageUrl, options]);
+      console.log("edit data", editData);
+    }
     setLoading(false);
     setSaved(true);
+  };
+
+  const deleteField = async () => {
+    setLoading(true);
+    if (fieldId) {
+      const collectionReference = db.collection("DataField");
+      const deleteData = await collectionReference
+        .record(fieldId)
+        .call("deleteField");
+      console.log("delete data", deleteData);
+    }
+    setLoading(false);
+    removeField();
   };
 
   return (
@@ -136,6 +185,7 @@ export default function EditDataField(props: Props) {
                   fullWidth
                   onChange={(e) => setName(e.target.value)}
                   sx={{ m: 1, mb: 0 }}
+                  value={name}
                 />
               </Grid>
               <Grid item xs={2} lg={1}>
@@ -160,6 +210,7 @@ export default function EditDataField(props: Props) {
                   multiline
                   rows={3}
                   onChange={(e) => setInstruction(e.target.value)}
+                  value={instruction}
                 />
               </Grid>
               {imageUrl && (
@@ -198,6 +249,7 @@ export default function EditDataField(props: Props) {
                             sx={{ color: "action.active", mr: 1, my: 0.5 }}
                           />
                         }
+                        optionData={fieldData ? fieldData.options[i - 1] : ""}
                       />
                     );
                   }
@@ -223,6 +275,7 @@ export default function EditDataField(props: Props) {
                             sx={{ color: "action.active", mr: 1, my: 0.5 }}
                           />
                         }
+                        optionData={fieldData ? fieldData.options[i - 1] : ""}
                       />
                     );
                   }
@@ -267,7 +320,7 @@ export default function EditDataField(props: Props) {
               <Button
                 variant="outlined"
                 sx={{ m: 1, mb: 0, textTransform: "none", color: "#e57373" }}
-                onClick={registerField}
+                onClick={deleteField}
               >
                 Remove
               </Button>

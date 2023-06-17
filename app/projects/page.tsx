@@ -1,15 +1,69 @@
 "use client";
-import { useState } from "react";
-import { Box, Grid, Tab } from "@mui/material";
+import { useEffect, useState } from "react";
+import { db } from "@/lib/polybase_init";
+import Web3Modal from "web3modal";
+import { ethers } from "ethers";
+
+import { Box, Grid, LinearProgress, Tab, Typography } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import AppNavBar from "../components/layout/AppNavBar";
 import { DrawerHeader } from "../components/layout/DrawerHeader";
 import ProjectsList from "../components/projects/ProjectsList";
 import StatBox from "../components/stats/StatBox";
-import FilterNoneOutlinedIcon from "@mui/icons-material/FilterNoneOutlined";
+import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
+import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
+import AddchartOutlinedIcon from "@mui/icons-material/AddchartOutlined";
 
 export default function Projects() {
   const [value, setValue] = useState("1");
+  const [ownedProjects, setOwnedProjects] = useState<any>([]);
+  const [joinedProjects, setJoinedProjects] = useState<any>([]);
+  const [loadingOwnedState, setLoadingOwnedState] = useState("not-loaded");
+  const [loadingJoinedState, setLoadingJoinedState] = useState("not-loaded");
+  const [loadingOwned, setLoadingOwned] = useState(false);
+  const [loadingJoined, setLoadingJoined] = useState(false);
+
+  useEffect(() => {
+    loadProjectsData();
+  }, []);
+
+  async function loadProjectsData() {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    getOwnedProjects(address);
+    getJoinedProjects(address);
+  }
+
+  const getOwnedProjects = async (address: string) => {
+    setLoadingOwned(true); // loading state
+    const recordsOwned = await db
+      .collection("Project")
+      .where("owner", "==", address)
+      .sort("id", "desc")
+      .get();
+
+    const ownedProjects: any = recordsOwned.data;
+    setOwnedProjects(ownedProjects);
+    setLoadingOwned(false); // loading state
+    setLoadingOwnedState("loaded");
+  };
+
+  const getJoinedProjects = async (address: string) => {
+    setLoadingJoined(true); // loading state
+    const recordsAll = await db.collection("Project").sort("id", "desc").get();
+
+    const allProjects: any = recordsAll.data;
+    const joinedProjects = allProjects.filter((project: any) => {
+      return project.members?.includes(address);
+    });
+
+    setJoinedProjects(joinedProjects);
+    setLoadingJoined(false); // loading state
+    setLoadingJoinedState("loaded");
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     event.preventDefault();
@@ -23,22 +77,22 @@ export default function Projects() {
         <Box sx={{ width: "100%", typography: "body1" }}>
           <Grid container>
             <StatBox
-              text="Total projects"
-              icon={<FilterNoneOutlinedIcon />}
-              value={5}
+              text="Owned projects"
+              icon={<BadgeOutlinedIcon sx={{ fontSize: 24 }} />}
+              value={ownedProjects.length}
               bgcolor="#e3f2fd"
             />
 
             <StatBox
-              text="Total contributions"
-              icon={<FilterNoneOutlinedIcon />}
-              value={5}
+              text="Joined projects"
+              icon={<GroupsOutlinedIcon sx={{ fontSize: 24 }} />}
+              value={joinedProjects.length}
               bgcolor="#e3f2fd"
             />
 
             <StatBox
-              text="Total Achievements"
-              icon={<FilterNoneOutlinedIcon />}
+              text="Total Contributions"
+              icon={<AddchartOutlinedIcon sx={{ fontSize: 24 }} />}
               value={5}
               bgcolor="#e3f2fd"
             />
@@ -51,22 +105,38 @@ export default function Projects() {
                 centered
               >
                 <Tab
-                  label="Joined"
+                  label="Owned"
                   value="1"
                   sx={{ textTransform: "none", mr: 4, ml: 4 }}
                 />
                 <Tab
-                  label="Owned"
+                  label="Joined"
                   value="2"
                   sx={{ textTransform: "none", mr: 4, ml: 4 }}
                 />
               </TabList>
             </Box>
             <TabPanel value="1">
-              <ProjectsList projets={[1, 2, 3]} />
+              {loadingOwned ? <LinearProgress sx={{ ml: 2, mr: 2 }} /> : null}
+              <ProjectsList projects={ownedProjects} />
+              {loadingOwnedState === "loaded" && !ownedProjects.length ? (
+                <Box sx={{ m: 3 }}>
+                  <Typography variant="h6">
+                    You do not own any project yet
+                  </Typography>
+                </Box>
+              ) : null}
             </TabPanel>
             <TabPanel value="2">
-              <ProjectsList projets={[1, 2]} />
+              {loadingJoined ? <LinearProgress sx={{ ml: 2, mr: 2 }} /> : null}
+              <ProjectsList projects={joinedProjects} />
+              {loadingJoinedState === "loaded" && !joinedProjects.length ? (
+                <Box sx={{ m: 3 }}>
+                  <Typography variant="h6">
+                    You have not joined any projects yet
+                  </Typography>
+                </Box>
+              ) : null}
             </TabPanel>
           </TabContext>
         </Box>

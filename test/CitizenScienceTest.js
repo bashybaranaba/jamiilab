@@ -97,5 +97,11 @@ describe("CitizenScienceRewards", function () {
     console.log("Balance Difference 1: ", balanceDifference1.toString());
     console.log("Balance Difference 2: ", balanceDifference2.toString());
     console.log("Balance Difference 3: ", balanceDifference3.toString());
+
+    //Get project id by project data
+    const projectId = await citizenScienceRewards.getProjectBlockId(
+      projectData
+    );
+    console.log("Project ID: ", projectId);
   });
 });

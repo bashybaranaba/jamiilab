@@ -4,13 +4,13 @@ import { Box, Grid, Paper, Typography } from "@mui/material";
 
 interface Props {
   projectData: {
-    image: string;
+    feature_image: string;
     name: string;
     headline: string;
   };
 }
 export default function ProjectBanner(props: Props) {
-  const { image, name, headline } = props.projectData;
+  const { feature_image, name, headline } = props.projectData;
   return (
     <div>
       <Paper
@@ -22,7 +22,7 @@ export default function ProjectBanner(props: Props) {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          backgroundImage: "url(" + image + ")",
+          backgroundImage: "url(" + feature_image + ")",
           borderRadius: 3,
           m: 2,
         }}

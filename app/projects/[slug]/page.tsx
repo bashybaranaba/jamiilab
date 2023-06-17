@@ -1,5 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useCollection } from "@polybase/react";
+import { db } from "@/lib/polybase_init";
+import Web3Modal from "web3modal";
+import { ethers } from "ethers";
+
 import {
   AppBar,
   Box,
@@ -16,6 +21,7 @@ import DatasetPreviewTable from "@/app/components/projects/dataset/DatasetPrevie
 import EditDataField from "@/app/components/projects/dataforms/EditDataField";
 import CreateDataField from "@/app/components/projects/dataforms/CreateDataField";
 import DataFields from "@/app/components/projects/dataforms/DataFields";
+import AddDataContribution from "@/app/components/projects/dataforms/AddDataContribution";
 
 const dummydata = {
   image: "",
@@ -31,35 +37,49 @@ const dummydata = {
     { id: 2, name: "Jane", age: 30 },
   ],
 };
-export default function Projects() {
+export default function ProjectPage({ params }: { params: { slug: string } }) {
   const [value, setValue] = useState("1");
-  const [datafields, setDatafields] = useState<any>([]);
   const [datafieldsCount, setDatafieldsCount] = useState(0);
+  const [userAddress, setUserAddress] = useState("");
+
+  const { slug } = params;
+  const id = slug.split("-lab")[1];
+  console.log("id: ", id);
+
+  //Project metadata
+  const projectDetailsQuery = db.collection("Project").where("id", "==", id);
+  const projectDetails = useCollection(projectDetailsQuery);
+  const project: any = projectDetails.data?.data[0]?.data;
+
+  //Project datafields
+  const datafieldsQuery = db
+    .collection("DataField")
+    .where("project_id", "==", id);
+  const datafieldsCollection = useCollection(datafieldsQuery);
+  console.log("datafieldsCollection: ", datafieldsCollection);
+  const datafields: any = datafieldsCollection.data?.data;
+  console.log("Saved datafields: ", datafields);
+
+  useEffect(() => {
+    if (!userAddress) {
+      getUserAddress();
+    }
+  }, []);
+
+  async function getUserAddress() {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    setUserAddress(address);
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     event.preventDefault();
     setValue(newValue);
   };
 
-  //Datafield functions
-  const getOption = (option: string) => {
-    setOptions([...options, option]);
-  };
-
-  const addOption = () => {
-    const numberOfOptions = optionsCount + 1;
-    setOptionCount(numberOfOptions);
-  };
-
-  const removeOption = (option: string) => {
-    const filteredOptions = options.filter((item: string) => item !== option);
-    setOptions(filteredOptions);
-  };
-
-  const removeOptionField = () => {
-    const numberOfOptions = optionsCount - 1;
-    setOptionCount(numberOfOptions);
-  };
   return (
     <Box>
       <Box sx={{ width: "100%", typography: "body1" }}>
@@ -72,7 +92,7 @@ export default function Projects() {
                 component="div"
                 sx={{ ml: 2, mt: 2, mb: -4, color: "#263238" }}
               >
-                Project Name
+                {project?.name}
               </Typography>
               <TabList
                 onChange={handleChange}
@@ -89,11 +109,14 @@ export default function Projects() {
                   value="2"
                   sx={{ textTransform: "none", mr: 2, ml: 2 }}
                 />
-                <Tab
-                  label="Data Fields"
-                  value="3"
-                  sx={{ textTransform: "none", mr: 2, ml: 2 }}
-                />
+                {!project || !userAddress ? null : userAddress ===
+                  project?.owner ? (
+                  <Tab
+                    label="Data Fields"
+                    value="3"
+                    sx={{ textTransform: "none", mr: 2, ml: 2 }}
+                  />
+                ) : null}
                 <Tab
                   label="Forum"
                   value="4"
@@ -105,22 +128,38 @@ export default function Projects() {
           <Box sx={{ mt: 6 }}>
             <TabPanel value="1">
               <Container maxWidth="lg">
-                <ProjectBanner projectData={dummydata} />
+                {project && <ProjectBanner projectData={project} />}
               </Container>
             </TabPanel>
             <TabPanel value="2">
               <Container maxWidth="md">
                 <Box sx={{ mt: 2 }}>
-                  <DatasetPreviewTable
-                    columns={dummydata.columns}
-                    rows={dummydata.rows}
-                  />
+                  {project && (
+                    <Box>
+                      <DatasetPreviewTable
+                        columns={dummydata.columns}
+                        rows={dummydata.rows}
+                      />
+                      <AddDataContribution
+                        userAddress={userAddress}
+                        projectData={project}
+                        formFields={datafields}
+                      />
+                    </Box>
+                  )}
                 </Box>
               </Container>
             </TabPanel>
             <TabPanel value="3">
               <Container maxWidth="md">
-                <DataFields />
+                {!project || !userAddress ? null : userAddress ===
+                  project?.owner ? (
+                  <DataFields
+                    savedDatafields={datafields}
+                    error={datafieldsCollection?.error?.reason}
+                    projectId={id}
+                  />
+                ) : null}
               </Container>
             </TabPanel>
             <TabPanel value="4">
