@@ -113,12 +113,14 @@ export default function AddDataContribution(props: Props) {
       signer
     );
     try {
+      const keys: any = Object.keys(dataValues);
+      const values: any = Object.values(dataValues);
       const dataContribution = await collectionReference.create([
         generateUniqueId(),
         projectData.id,
         userAddress,
-        Object.keys(dataValues),
-        Object.values(dataValues),
+        keys,
+        values,
       ]);
       console.log(dataContribution.data.id);
       const projectBlockId = await contract.getProjectBlockId(projectData.id);
