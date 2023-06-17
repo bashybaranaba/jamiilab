@@ -1,19 +1,16 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import {
-  Avatar,
   Box,
   Card,
   CardContent,
   CardMedia,
   Grid,
   Typography,
-  Tooltip,
   CardActionArea,
 } from "@mui/material";
 
-import ModelTrainingIcon from "@mui/icons-material/ModelTraining";
-import TollOutlinedIcon from "@mui/icons-material/TollOutlined";
+
 interface Props {
   data: {
     id: string;

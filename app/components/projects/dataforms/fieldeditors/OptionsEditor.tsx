@@ -1,18 +1,5 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  Grid,
-  IconButton,
-  Typography,
-  Tooltip,
-  TextField,
-  CardActionArea,
-} from "@mui/material";
+import { useState } from "react";
+import { Box, Grid, IconButton, TextField } from "@mui/material";
 
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
@@ -63,10 +50,6 @@ export default function OptionsEditor(props: Props) {
     getOption(option);
     setRegistered(true);
     setFinished(true);
-  };
-
-  const retainRegistered = () => {
-    setRegistered(true);
   };
 
   return (

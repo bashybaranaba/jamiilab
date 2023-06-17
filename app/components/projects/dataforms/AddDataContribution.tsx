@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { db } from "@/lib/polybase_init";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
@@ -12,18 +11,11 @@ import Dialog from "@mui/material/Dialog";
 import Grid from "@mui/material/Grid";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
-import TextField from "@mui/material/TextField";
 import { TransitionProps } from "@mui/material/transitions";
 
-import AddBoxIcon from "@mui/icons-material/AddBox";
 import AddIcon from "@mui/icons-material/Add";
 
-import { CardMedia, Paper } from "@mui/material";
 import { generateUniqueId } from "@/app/components/util/GenerateUniqueId";
 import PresentedDataField from "./PresentedDataField";
 

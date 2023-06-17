@@ -1,46 +1,23 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { db } from "@/lib/polybase_init";
-
 import {
-  Avatar,
   Box,
-  Button,
   Card,
-  Container,
   CardContent,
   CardMedia,
   Checkbox,
-  Fab,
   FormGroup,
   FormControlLabel,
-  FormControl,
   Grid,
   Radio,
   RadioGroup,
   TextField,
   Typography,
-  Tooltip,
-  CardActionArea,
 } from "@mui/material";
-import { SelectChangeEvent } from "@mui/material/Select";
 
-import ShortTextIcon from "@mui/icons-material/ShortText";
-import SubjectIcon from "@mui/icons-material/Subject";
-import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
-import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import LinearScaleIcon from "@mui/icons-material/LinearScale";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AddLocationAltOutlinedIcon from "@mui/icons-material/AddLocationAltOutlined";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import AddIcon from "@mui/icons-material/Add";
 
-import ImageUpload from "../../util/ImageUpload";
 import NoneEditable from "./fieldeditors/NoneEditable";
-import { generateUniqueId } from "@/app/components/util/GenerateUniqueId";
 import FileUpload from "../../util/FileUpload";
 
 interface Props {

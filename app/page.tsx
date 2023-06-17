@@ -9,7 +9,7 @@ import ProjectsList from "./components/projects/ProjectsList";
 
 export default function Home() {
   const query = db.collection("Project").sort("id", "desc");
-  const { data, error, loading } = useCollection(query);
+  const { data } = useCollection(query);
 
   const projects: any = data?.data;
 

@@ -1,29 +1,14 @@
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { db } from "@/lib/polybase_init";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import Container from "@mui/material/Container";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import Grid from "@mui/material/Grid";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
-import Slide from "@mui/material/Slide";
 import TextField from "@mui/material/TextField";
-import { TransitionProps } from "@mui/material/transitions";
-
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import AddIcon from "@mui/icons-material/Add";
-
-import { CardMedia, Paper } from "@mui/material";
 
 interface Props {
   projectData: {
