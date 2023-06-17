@@ -312,10 +312,10 @@ export default function EditDataField(props: Props) {
               <Button
                 variant="contained"
                 sx={{ m: 1, mb: 0, textTransform: "none", width: 100 }}
-                disabled={!name || !instruction || saved}
+                disabled={!name || !instruction || saved || loading}
                 onClick={registerField}
               >
-                {saved ? "Saved" : "Save"}
+                {!loading ? (saved ? "Saved" : "Save") : "Loading"}
               </Button>
               <Button
                 variant="outlined"

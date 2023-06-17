@@ -18,6 +18,7 @@ export default function Projects() {
   const [value, setValue] = useState("1");
   const [ownedProjects, setOwnedProjects] = useState<any>([]);
   const [joinedProjects, setJoinedProjects] = useState<any>([]);
+  const [contributions, setContributions] = useState<any>([]);
   const [loadingOwnedState, setLoadingOwnedState] = useState("not-loaded");
   const [loadingJoinedState, setLoadingJoinedState] = useState("not-loaded");
   const [loadingOwned, setLoadingOwned] = useState(false);
@@ -35,6 +36,7 @@ export default function Projects() {
     const address = await signer.getAddress();
     getOwnedProjects(address);
     getJoinedProjects(address);
+    getDataContributions(address);
   }
 
   const getOwnedProjects = async (address: string) => {
@@ -46,6 +48,7 @@ export default function Projects() {
       .get();
 
     const ownedProjects: any = recordsOwned.data;
+
     setOwnedProjects(ownedProjects);
     setLoadingOwned(false); // loading state
     setLoadingOwnedState("loaded");
@@ -56,13 +59,27 @@ export default function Projects() {
     const recordsAll = await db.collection("Project").sort("id", "desc").get();
 
     const allProjects: any = recordsAll.data;
-    const joinedProjects = allProjects.filter((project: any) => {
-      return project.members?.includes(address);
+    const filterJoinedProjects = allProjects.filter((project: any) => {
+      return project.data.members?.includes(address);
     });
 
-    setJoinedProjects(joinedProjects);
+    setJoinedProjects(filterJoinedProjects);
     setLoadingJoined(false); // loading state
     setLoadingJoinedState("loaded");
+  };
+
+  const getDataContributions = async (address: string) => {
+    const contributionRecords = await db
+      .collection("DataContribution")
+      .where("contributor", "==", address)
+      .sort("id", "desc")
+      .get();
+
+    const myContributions: any = contributionRecords.data;
+    console.log("myContributions", myContributions);
+    setContributions(myContributions);
+    setLoadingOwned(false); // loading state
+    setLoadingOwnedState("loaded");
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -93,7 +110,7 @@ export default function Projects() {
             <StatBox
               text="Total Contributions"
               icon={<AddchartOutlinedIcon sx={{ fontSize: 24 }} />}
-              value={5}
+              value={contributions.length}
               bgcolor="#e3f2fd"
             />
           </Grid>

@@ -122,6 +122,7 @@ export default function AddDataContribution(props: Props) {
       const dataContribution = await collectionReference.create([
         generateUniqueId(),
         projectData.id,
+        userAddress,
         Object.keys(dataValues),
         Object.values(dataValues),
       ]);
@@ -143,18 +144,22 @@ export default function AddDataContribution(props: Props) {
     <div>
       <Box>
         {projectData.members.includes(userAddress) ? (
-          <Button
-            variant="contained"
-            onClick={handleClickOpen}
-            startIcon={<AddIcon />}
-            sx={{
-              textTransform: "none",
-            }}
-          >
-            Add data to the project
-          </Button>
+          !loading && (
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={handleClickOpen}
+              startIcon={<AddIcon />}
+              sx={{
+                textTransform: "none",
+              }}
+            >
+              Add data to the project
+            </Button>
+          )
         ) : (
           <Button
+            fullWidth
             variant="contained"
             onClick={addMember}
             startIcon={<AddIcon />}
@@ -162,9 +167,15 @@ export default function AddDataContribution(props: Props) {
               textTransform: "none",
             }}
           >
-            {projectData.owner === userAddress
-              ? "Start adding data to the project"
-              : "Join to add data to the project"}
+            {!loading ? (
+              projectData.owner === userAddress ? (
+                "Start adding data to the project"
+              ) : (
+                "Join to add data to the project"
+              )
+            ) : (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            )}
           </Button>
         )}
       </Box>
@@ -199,12 +210,17 @@ export default function AddDataContribution(props: Props) {
               Add data to the project
             </Typography>
 
-            {formFields.map((field: any) => (
-              <PresentedDataField
-                fieldData={field.data}
-                getFieldValues={getFieldValues}
-              />
-            ))}
+            {formFields ? (
+              formFields.map((field: any) => (
+                <PresentedDataField
+                  fieldData={field.data}
+                  getFieldValues={getFieldValues}
+                  key={field.data.id}
+                />
+              ))
+            ) : (
+              <Typography>This project has no fields yet</Typography>
+            )}
 
             <Grid container>
               <Button

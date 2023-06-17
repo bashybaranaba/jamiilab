@@ -4,42 +4,26 @@ import { useCollection } from "@polybase/react";
 import { db } from "@/lib/polybase_init";
 import Web3Modal from "web3modal";
 import { ethers } from "ethers";
-
+import { useRouter } from "next/navigation";
 import {
   AppBar,
   Box,
   Container,
-  Grid,
+  Fab,
+  LinearProgress,
   Tab,
-  Toolbar,
   Typography,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import ScienceOutlinedIcon from "@mui/icons-material/ScienceOutlined";
 
 import ProjectBanner from "@/app/components/projects/ProjectBanner";
-import DatasetPreviewTable from "@/app/components/projects/dataset/DatasetPreview";
-import EditDataField from "@/app/components/projects/dataforms/EditDataField";
-import CreateDataField from "@/app/components/projects/dataforms/CreateDataField";
 import DataFields from "@/app/components/projects/dataforms/DataFields";
-import AddDataContribution from "@/app/components/projects/dataforms/AddDataContribution";
+import AboutProject from "@/app/components/projects/AboutProject";
+import DatasetDetails from "@/app/components/projects/dataset/DatasetDetails";
 
-const dummydata = {
-  image: "",
-  name: "Test Project",
-  headline: "Test Headline",
-
-  columns: [
-    { field: "name", headerName: "Name" },
-    { field: "age", headerName: "Age" },
-  ],
-  rows: [
-    { id: 1, name: "John", age: 20 },
-    { id: 2, name: "Jane", age: 30 },
-  ],
-};
 export default function ProjectPage({ params }: { params: { slug: string } }) {
   const [value, setValue] = useState("1");
-  const [datafieldsCount, setDatafieldsCount] = useState(0);
   const [userAddress, setUserAddress] = useState("");
 
   const { slug } = params;
@@ -59,6 +43,49 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   console.log("datafieldsCollection: ", datafieldsCollection);
   const datafields: any = datafieldsCollection.data?.data;
   console.log("Saved datafields: ", datafields);
+
+  //Project data contributions
+  const dataQuery = db
+    .collection("DataContribution")
+    .where("project_id", "==", id);
+  const dataCollection = useCollection(dataQuery);
+  const dataContributions: any = dataCollection.data?.data;
+  console.log("Data contributions: ", dataContributions);
+
+  const dataColumns = datafields?.map((datafield: any) => {
+    return {
+      field: datafield.data.id,
+      headerName: datafield.data.name,
+    };
+  });
+  console.log("Data columns: ", dataColumns);
+
+  const dataRows = dataContributions?.map((dataContribution: any) => {
+    const dataRow: any = {};
+    //get datafield id which is dataContribution.data.keys[i] and corresponding value which id dataContribution.data.values[i]
+    if (dataContribution.data.keys) {
+      for (let i = 0; i < dataContribution.data.keys.length; i++) {
+        dataRow.id = dataContribution.data.id;
+        dataRow[dataContribution.data.keys[i]] =
+          dataContribution.data.values[i];
+      }
+    }
+    return dataRow;
+  });
+  console.log("Data rows: ", dataRows);
+
+  //Project total datapoints count: if value isan empty string do not count it
+  let totalDatapointsCount = 0;
+  dataContributions?.forEach((dataContribution: any) => {
+    if (!dataContribution.data.values) return;
+    dataContribution.data.values.forEach((value: any) => {
+      if (value !== "") {
+        totalDatapointsCount++;
+      }
+    });
+  });
+
+  console.log("Total datapoints count: ", totalDatapointsCount);
 
   useEffect(() => {
     if (!userAddress) {
@@ -80,9 +107,25 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
     setValue(newValue);
   };
 
+  const router = useRouter();
+
+  const handleBacktoProjects = (e: any) => {
+    e.preventDefault();
+    router.push(`/projects`);
+  };
+  const myProjectsButton = (
+    <Fab
+      onClick={handleBacktoProjects}
+      sx={{ mt: 3, mb: -10, backgroundColor: "#283593", color: "#fff" }}
+    >
+      <ScienceOutlinedIcon />
+    </Fab>
+  );
+
   return (
     <Box>
       <Box sx={{ width: "100%", typography: "body1" }}>
+        {!project ? <LinearProgress /> : null}
         <TabContext value={value}>
           <Box sx={{ borderColor: "divider", mr: 3, ml: 3 }}>
             <AppBar position="fixed" sx={{ bgcolor: "#fff" }}>
@@ -90,7 +133,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                 variant="h6"
                 noWrap
                 component="div"
-                sx={{ ml: 2, mt: 2, mb: -4, color: "#263238" }}
+                sx={{ ml: 4, mt: 2, mb: -4, color: "#263238" }}
               >
                 {project?.name}
               </Typography>
@@ -127,23 +170,43 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           </Box>
           <Box sx={{ mt: 6 }}>
             <TabPanel value="1">
+              {myProjectsButton}
               <Container maxWidth="lg">
-                {project && <ProjectBanner projectData={project} />}
+                {project && (
+                  <Box>
+                    <ProjectBanner projectData={project} />
+                    <Box sx={{ m: 3 }}>
+                      <AboutProject
+                        projectData={project}
+                        userAddress={userAddress}
+                        dataContributions={
+                          dataContributions ? dataContributions.length : 0
+                        }
+                        formFields={datafields}
+                      />
+                    </Box>
+                  </Box>
+                )}
               </Container>
             </TabPanel>
             <TabPanel value="2">
+              {myProjectsButton}
               <Container maxWidth="md">
                 <Box sx={{ mt: 2 }}>
                   {project && (
                     <Box>
-                      <DatasetPreviewTable
-                        columns={dummydata.columns}
-                        rows={dummydata.rows}
-                      />
-                      <AddDataContribution
+                      <DatasetDetails
                         userAddress={userAddress}
                         projectData={project}
                         formFields={datafields}
+                        totalDatapointsCount={totalDatapointsCount}
+                        pricePerDatapoint={
+                          project.price_per_datapoint
+                            ? project.price_per_datapoint
+                            : 0
+                        }
+                        dataColumns={dataColumns}
+                        dataRows={dataRows}
                       />
                     </Box>
                   )}
@@ -151,6 +214,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               </Container>
             </TabPanel>
             <TabPanel value="3">
+              {myProjectsButton}
               <Container maxWidth="md">
                 {!project || !userAddress ? null : userAddress ===
                   project?.owner ? (
@@ -163,6 +227,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               </Container>
             </TabPanel>
             <TabPanel value="4">
+              {myProjectsButton}
               <Container maxWidth="md">Coming soon</Container>
             </TabPanel>
           </Box>

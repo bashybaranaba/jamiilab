@@ -40,12 +40,12 @@ export default function DataFields(props: Props) {
     setDatafieldsCount(numberOfFields);
   };
 
-  const removeField = (datafield: object) => {
-    const filteredFields = datafield.filter(
-      (item: object) => item !== datafield
-    );
-    setDatafieldsCount(filteredFields);
-  };
+  //const removeField = (datafield: object) => {
+  //  const filteredFields = datafield.filter(
+  //    (item: object) => item !== datafield
+  //  );
+  //  setDatafieldsCount(filteredFields);
+  //};
 
   const removeDataField = () => {
     const numberOfFields = datafieldsCount - 1;

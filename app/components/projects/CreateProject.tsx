@@ -92,6 +92,7 @@ export default function CreateProject(props: Props) {
         imageUri,
         members,
         0,
+        0,
       ]);
       console.log(projectDetails.data.id);
       await contract.createProject(projectDetails.data.id);

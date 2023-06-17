@@ -24,7 +24,7 @@ export default function DatasetPreviewTable(props: Props) {
   const { rows, columns } = props;
 
   return (
-    <div style={{ height: 350, width: "100%" }}>
+    <div style={{ height: 320, width: "100%" }}>
       {!rows || !columns ? <LinearProgress /> : null}
       <DataGrid
         rows={rows}
