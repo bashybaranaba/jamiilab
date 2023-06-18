@@ -64,8 +64,6 @@ export default function ProjectBanner(props: Props) {
             </Box>
           </Grid>
           <Box sx={{ flexGrow: 1 }} />
-
-          <Box sx={{ m: 2 }}>Edit</Box>
         </Grid>
       </Paper>
     </div>
