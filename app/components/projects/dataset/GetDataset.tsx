@@ -94,7 +94,7 @@ export default function GetDataset(props: Props) {
     const a = document.createElement("a");
     a.setAttribute("hidden", "");
     a.setAttribute("href", url);
-    a.setAttribute("download", "dataset.csv");
+    a.setAttribute("download", `${projectData.name}dataset.csv`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
