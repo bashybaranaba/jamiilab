@@ -19,6 +19,8 @@ import AddLocationAltOutlinedIcon from "@mui/icons-material/AddLocationAltOutlin
 
 import NoneEditable from "./fieldeditors/NoneEditable";
 import FileUpload from "../../util/FileUpload";
+import BasicDatePicker from "../../util/BasicDatePicker";
+import BasicTimePicker from "../../util/BasicTimePicker";
 
 interface Props {
   fieldData: {
@@ -157,10 +159,16 @@ export default function PresentedDataField(props: Props) {
               <FileUpload setFileUri={getFieldValues} fieldId={fieldData.id} />
             ) : null}
             {fieldData.type === "date" ? (
-              <NoneEditable text="Date " icon={<EventOutlinedIcon />} />
+              <BasicDatePicker
+                setDate={getFieldValues}
+                fieldId={fieldData.id}
+              />
             ) : null}
             {fieldData.type === "time" ? (
-              <NoneEditable text="Time " icon={<AccessTimeIcon />} />
+              <BasicTimePicker
+                setTime={getFieldValues}
+                fieldId={fieldData.id}
+              />
             ) : null}
             {fieldData.type === "location" ? (
               <NoneEditable

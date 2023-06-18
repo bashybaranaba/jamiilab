@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Web3Storage } from "web3.storage";
-
+import { web3StorageToken } from "@/lib/config";
 import { CircularProgress } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -18,9 +18,7 @@ export default function FileUpload(props: Props) {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<any>(null);
 
-  const storageToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg2YWIyOTRhMTQ1RThENkU0ZDFCNmNlRTcwODAxZGNDMTkyOWQ5NzkiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2Nzc5Mzg1Mjg3MTQsIm5hbWUiOiJGb2xpb2hvdXNlIn0.2mttZrpJ6UBXcJwqr28iUb1rV8cqR5Y0MuxhZp-h9n4";
-
+  const storageToken = web3StorageToken ? web3StorageToken : "";
   const storage = new Web3Storage({ token: storageToken });
 
   const uploadFile = async (e: any) => {

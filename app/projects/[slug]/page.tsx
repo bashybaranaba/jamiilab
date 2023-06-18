@@ -12,6 +12,7 @@ import {
   Fab,
   LinearProgress,
   Tab,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -114,17 +115,27 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
     router.push(`/projects`);
   };
   const myProjectsButton = (
-    <Fab
-      onClick={handleBacktoProjects}
-      sx={{ mt: 3, mb: -10, backgroundColor: "#283593", color: "#fff" }}
-    >
-      <ScienceOutlinedIcon />
-    </Fab>
+    <Box sx={{ position: "fixed" }}>
+      <Tooltip title="back to projects">
+        <Fab
+          onClick={handleBacktoProjects}
+          color="primary"
+          sx={{ mt: 3, mb: -10 }}
+        >
+          <ScienceOutlinedIcon />
+        </Fab>
+      </Tooltip>
+    </Box>
   );
 
   return (
     <Box>
-      <Box sx={{ width: "100%", typography: "body1" }}>
+      <Box
+        sx={{
+          width: "100%",
+          typography: "body1",
+        }}
+      >
         {!project ? <LinearProgress /> : null}
         <TabContext value={value}>
           <Box sx={{ borderColor: "divider", mr: 3, ml: 3 }}>
