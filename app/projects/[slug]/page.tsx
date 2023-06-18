@@ -185,7 +185,10 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               <Container maxWidth="lg">
                 {project && (
                   <Box>
-                    <ProjectBanner projectData={project} />
+                    <ProjectBanner
+                      projectData={project}
+                      userAddress={userAddress}
+                    />
                     <Box sx={{ m: 3 }}>
                       <AboutProject
                         projectData={project}

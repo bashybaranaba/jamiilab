@@ -1,8 +1,5 @@
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { db } from "@/lib/polybase_init";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -12,16 +9,13 @@ import Dialog from "@mui/material/Dialog";
 import Grid from "@mui/material/Grid";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import TextField from "@mui/material/TextField";
 import { TransitionProps } from "@mui/material/transitions";
 
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 
 import ImageUpload from "../util/ImageUpload";
 import { CardMedia, Paper } from "@mui/material";
@@ -39,21 +33,27 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const steps = ["Upload files", "Add details", "Confirm details"];
-
 interface Props {
-  minimized: boolean;
+  projectData: {
+    id: string;
+    name: string;
+    headline: string;
+    about: string;
+    feature_image: string;
+    is_archived: number;
+  };
 }
 
-export default function CreateProject(props: Props) {
-  const { minimized } = props;
+export default function EditProject(props: Props) {
+  const { projectData } = props;
 
-  const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [name, setName] = React.useState("");
-  const [headline, setHeadline] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [imageUri, setImageUri] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(projectData.name);
+  const [headline, setHeadline] = useState(projectData.headline);
+  const [description, setDescription] = useState(projectData.about);
+  const [imageUri, setImageUri] = useState(projectData.feature_image);
+  const [isArchived, setIsArchived] = useState(projectData.is_archived);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -63,36 +63,19 @@ export default function CreateProject(props: Props) {
     setOpen(false);
   };
 
-  async function CreateProject() {
-    setLoading(true);
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner();
-    const signerAddress = await signer.getAddress();
+  async function EditProject() {
     const collectionReference = db.collection("Project");
-
-    let contract = new ethers.Contract(
-      CitizenScienceRewardsAddress,
-      CitizenScienceRewards.abi,
-      signer
-    );
-
     try {
-      const members: any[] = [];
-      const projectDetails = await collectionReference.create([
-        generateUniqueId(),
-        signerAddress,
-        name,
-        headline,
-        description,
-        imageUri,
-        members,
-        0,
-        0,
-      ]);
+      const projectDetails = await collectionReference
+        .record(projectData.id)
+        .call("editProject", [
+          name,
+          headline,
+          description,
+          imageUri,
+          isArchived,
+        ]);
       console.log(projectDetails.data.id);
-      await contract.createProject(projectDetails.data.id);
       setLoading(false);
       handleClose();
     } catch (error) {
@@ -102,36 +85,16 @@ export default function CreateProject(props: Props) {
 
   return (
     <div>
-      <ListItemButton
-        onClick={handleClickOpen}
-        sx={{
-          display: minimized ? "block" : "none",
-          justifyContent: "center",
-          px: 2.0,
-        }}
-      >
-        <ListItemIcon
-          sx={{
-            color: "#283593",
-            minWidth: 0,
-            mr: "auto",
-            justifyContent: "center",
-          }}
-        >
-          <AddBoxIcon sx={{ fontSize: 32 }} />
-        </ListItemIcon>
-      </ListItemButton>
       <Button
         variant="contained"
         onClick={handleClickOpen}
-        startIcon={<AddIcon />}
+        startIcon={<EditIcon />}
         sx={{
           textTransform: "none",
-          display: minimized ? "none" : "flex",
-          m: 2,
+          m: 1,
         }}
       >
-        Create new project
+        Edit
       </Button>
       <Dialog
         fullScreen
@@ -161,7 +124,7 @@ export default function CreateProject(props: Props) {
               variant="h5"
               component="div"
             >
-              Create a new Project
+              Edit Project
             </Typography>
 
             {imageUri && (
@@ -180,6 +143,7 @@ export default function CreateProject(props: Props) {
                   fullWidth
                   sx={{ mt: 2 }}
                   onChange={(e) => setName(e.target.value)}
+                  value={name}
                 />
               </Grid>
               <Grid item xs={2} lg={2}>
@@ -196,6 +160,7 @@ export default function CreateProject(props: Props) {
                 rows={2}
                 sx={{ mt: 2 }}
                 onChange={(e) => setHeadline(e.target.value)}
+                value={headline}
               />
               <TextField
                 variant="outlined"
@@ -205,19 +170,20 @@ export default function CreateProject(props: Props) {
                 rows={8}
                 sx={{ mt: 2 }}
                 onChange={(e) => setDescription(e.target.value)}
+                value={description}
               />
               <Button
                 fullWidth
                 variant="contained"
                 component="label"
                 sx={{ textTransform: "none", mt: 2 }}
-                onClick={CreateProject}
+                onClick={EditProject}
                 disabled={!name || !headline}
               >
                 {loading ? (
                   <CircularProgress size={25} sx={{ color: "#fff" }} />
                 ) : (
-                  "Create Project"
+                  "Save Changes"
                 )}
               </Button>
             </Grid>
