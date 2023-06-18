@@ -18,11 +18,7 @@ import { TransitionProps } from "@mui/material/transitions";
 import EditIcon from "@mui/icons-material/Edit";
 
 import ImageUpload from "../util/ImageUpload";
-import { CardMedia, Paper } from "@mui/material";
-import { generateUniqueId } from "@/app/components/util/GenerateUniqueId";
-
-import { CitizenScienceRewardsAddress } from "@/lib/config.js";
-import CitizenScienceRewards from "@/lib/CitizenScienceRewards.json";
+import { CardMedia } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
