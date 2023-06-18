@@ -14,7 +14,6 @@ export default function ImageUpload(props: Props) {
   const [loading, setLoading] = useState(false);
 
   const storageToken = web3StorageToken ? web3StorageToken : "";
-  console.log("storageToken: ", storageToken);
   const storage = new Web3Storage({ token: storageToken });
 
   const uploadImage = async (e: any) => {
