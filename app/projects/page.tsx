@@ -91,6 +91,9 @@ export default function Projects() {
       <AppNavBar />
       <Box component="main" sx={{ flexGrow: 1, p: 5 }}>
         <DrawerHeader />
+        <Typography variant="h5" sx={{ mt: -2, mb: 1 }}>
+          My Projects
+        </Typography>
         <Box sx={{ width: "100%", typography: "body1" }}>
           <Grid container>
             <StatBox
@@ -104,14 +107,14 @@ export default function Projects() {
               text="Joined projects"
               icon={<GroupsOutlinedIcon sx={{ fontSize: 24 }} />}
               value={joinedProjects.length}
-              bgcolor="#e3f2fd"
+              bgcolor="#c5cae9"
             />
 
             <StatBox
               text="Total Contributions"
               icon={<AddchartOutlinedIcon sx={{ fontSize: 24 }} />}
               value={contributions.length}
-              bgcolor="#e3f2fd"
+              bgcolor="#dcedc8"
             />
           </Grid>
           <TabContext value={value}>
