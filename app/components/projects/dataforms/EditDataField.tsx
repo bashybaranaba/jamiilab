@@ -10,6 +10,7 @@ import {
   CardMedia,
   Fab,
   Grid,
+  Tooltip,
   TextField,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
@@ -156,174 +157,173 @@ export default function EditDataField(props: Props) {
   };
 
   return (
-    <Grid container>
-      <Grid item xs={11} lg={11}>
-        <Card
-          elevation={0}
-          sx={{
-            m: 1,
-            border: 1,
-            borderRadius: 2,
-            borderColor: "#3949ab",
-          }}
-        >
-          <CardContent>
-            <Grid container spacing={1}>
-              <Grid item xs={10} lg={7}>
-                <TextField
-                  id="name"
-                  label="Field name"
-                  variant="filled"
-                  fullWidth
-                  onChange={(e) => setName(e.target.value)}
-                  sx={{ m: 1, mb: 0 }}
-                  value={name}
-                />
-              </Grid>
-              <Grid item xs={2} lg={1}>
-                <Box sx={{ m: 1, mb: 0 }}>
-                  <ImageUpload setImageUri={setImageUrl} />
-                </Box>
-              </Grid>
-              <Grid item xs={12} lg={4}>
-                <Box sx={{ m: 1, mb: 0 }}>
-                  <FieldTypeSelector
-                    fieldType={fieldType}
-                    handleFieldChange={handleFieldChange}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} lg={12} sx={{ m: 1 }}>
-                <TextField
-                  id="instruction"
-                  label="Instruction / Question"
-                  variant="filled"
-                  fullWidth
-                  multiline
-                  rows={3}
-                  onChange={(e) => setInstruction(e.target.value)}
-                  value={instruction}
-                />
-              </Grid>
-              {imageUrl && (
-                <Grid item xs={12} lg={12} sx={{ m: 2 }}>
-                  <CardMedia
-                    component="img"
-                    height="280"
-                    image={imageUrl}
-                    sx={{ borderRadius: 3 }}
-                  />
-                </Grid>
-              )}
+    <Grid>
+      <Card
+        elevation={0}
+        sx={{
+          m: 1,
+          border: 1,
+          borderRadius: 2,
+          borderColor: "#3949ab",
+        }}
+      >
+        <CardContent>
+          <Grid container spacing={1}>
+            <Grid item xs={10} lg={7}>
+              <TextField
+                id="name"
+                label="Field name"
+                variant="filled"
+                fullWidth
+                onChange={(e) => setName(e.target.value)}
+                sx={{ m: 1, mb: 0 }}
+                value={name}
+              />
             </Grid>
-
-            {fieldType === "shortAnswer" ? (
-              <NoneEditable text="Short response" icon={<ShortTextIcon />} />
-            ) : null}
-            {fieldType === "paragraph" ? (
-              <NoneEditable text="Paragraph response" icon={<SubjectIcon />} />
-            ) : null}
-            {fieldType === "multipleChoice" ? (
-              <Container sx={{ mt: 3 }}>
-                {(function (rows: any[], i, len) {
-                  while (++i <= len) {
-                    rows.push(
-                      <OptionsEditor
-                        getOption={getOption}
-                        addOption={addOption}
-                        removeOption={removeOption}
-                        removeOptionField={removeOptionField}
-                        instances={optionsCount}
-                        index={i}
-                        key={i}
-                        icon={
-                          <RadioButtonUncheckedIcon
-                            sx={{ color: "action.active", mr: 1, my: 0.5 }}
-                          />
-                        }
-                        optionData={fieldData ? fieldData.options[i - 1] : ""}
-                      />
-                    );
-                  }
-                  return rows;
-                })([], 0, optionsCount)}
-              </Container>
-            ) : null}
-            {fieldType === "checkboxes" ? (
-              <Container sx={{ mt: 3 }}>
-                {(function (rows: any[], i, len) {
-                  while (++i <= len) {
-                    rows.push(
-                      <OptionsEditor
-                        getOption={getOption}
-                        addOption={addOption}
-                        removeOption={removeOption}
-                        removeOptionField={removeOptionField}
-                        instances={optionsCount}
-                        index={i}
-                        key={i}
-                        icon={
-                          <CheckBoxOutlineBlankIcon
-                            sx={{ color: "action.active", mr: 1, my: 0.5 }}
-                          />
-                        }
-                        optionData={fieldData ? fieldData.options[i - 1] : ""}
-                      />
-                    );
-                  }
-                  return rows;
-                })([], 0, optionsCount)}
-              </Container>
-            ) : null}
-            {fieldType === "linearScale" ? (
-              <Box>
-                <TextField
-                  label="short answer text"
-                  variant="standard"
-                  fullWidth
+            <Grid item xs={2} lg={1}>
+              <Box sx={{ m: 1, mb: 0 }}>
+                <ImageUpload setImageUri={setImageUrl} />
+              </Box>
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <Box sx={{ m: 1, mb: 0 }}>
+                <FieldTypeSelector
+                  fieldType={fieldType}
+                  handleFieldChange={handleFieldChange}
                 />
               </Box>
-            ) : null}
-            {fieldType === "fileUpload" ? (
-              <NoneEditable text="File upload" icon={<UploadFileIcon />} />
-            ) : null}
-            {fieldType === "date" ? (
-              <NoneEditable text="Date " icon={<EventOutlinedIcon />} />
-            ) : null}
-            {fieldType === "time" ? (
-              <NoneEditable text="Time " icon={<AccessTimeIcon />} />
-            ) : null}
-            {fieldType === "location" ? (
-              <NoneEditable
-                text="location"
-                icon={<AddLocationAltOutlinedIcon />}
+            </Grid>
+            <Grid item xs={12} lg={12} sx={{ m: 1 }}>
+              <TextField
+                id="instruction"
+                label="Instruction / Question"
+                variant="filled"
+                fullWidth
+                multiline
+                rows={3}
+                onChange={(e) => setInstruction(e.target.value)}
+                value={instruction}
               />
-            ) : null}
-            <Box sx={{ display: "flex" }}>
-              <Grid sx={{ flexGrow: 1 }} />
-              <Button
-                variant="contained"
-                sx={{ m: 1, mb: 0, textTransform: "none", width: 100 }}
-                disabled={!name || !instruction || saved || loading}
-                onClick={registerField}
-              >
-                {!loading ? (saved ? "Saved" : "Save") : "Loading"}
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{ m: 1, mb: 0, textTransform: "none", color: "#e57373" }}
-                onClick={deleteField}
-              >
-                Remove
-              </Button>
+            </Grid>
+            {imageUrl && (
+              <Grid item xs={12} lg={12} sx={{ m: 2 }}>
+                <CardMedia
+                  component="img"
+                  height="280"
+                  image={imageUrl}
+                  sx={{ borderRadius: 3 }}
+                />
+              </Grid>
+            )}
+          </Grid>
+
+          {fieldType === "shortAnswer" ? (
+            <NoneEditable text="Short response" icon={<ShortTextIcon />} />
+          ) : null}
+          {fieldType === "paragraph" ? (
+            <NoneEditable text="Paragraph response" icon={<SubjectIcon />} />
+          ) : null}
+          {fieldType === "multipleChoice" ? (
+            <Container sx={{ mt: 3 }}>
+              {(function (rows: any[], i, len) {
+                while (++i <= len) {
+                  rows.push(
+                    <OptionsEditor
+                      getOption={getOption}
+                      addOption={addOption}
+                      removeOption={removeOption}
+                      removeOptionField={removeOptionField}
+                      instances={optionsCount}
+                      index={i}
+                      key={i}
+                      icon={
+                        <RadioButtonUncheckedIcon
+                          sx={{ color: "action.active", mr: 1, my: 0.5 }}
+                        />
+                      }
+                      optionData={fieldData ? fieldData.options[i - 1] : ""}
+                    />
+                  );
+                }
+                return rows;
+              })([], 0, optionsCount)}
+            </Container>
+          ) : null}
+          {fieldType === "checkboxes" ? (
+            <Container sx={{ mt: 3 }}>
+              {(function (rows: any[], i, len) {
+                while (++i <= len) {
+                  rows.push(
+                    <OptionsEditor
+                      getOption={getOption}
+                      addOption={addOption}
+                      removeOption={removeOption}
+                      removeOptionField={removeOptionField}
+                      instances={optionsCount}
+                      index={i}
+                      key={i}
+                      icon={
+                        <CheckBoxOutlineBlankIcon
+                          sx={{ color: "action.active", mr: 1, my: 0.5 }}
+                        />
+                      }
+                      optionData={fieldData ? fieldData.options[i - 1] : ""}
+                    />
+                  );
+                }
+                return rows;
+              })([], 0, optionsCount)}
+            </Container>
+          ) : null}
+          {fieldType === "linearScale" ? (
+            <Box>
+              <TextField
+                label="short answer text"
+                variant="standard"
+                fullWidth
+              />
             </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={1} lg={1}>
-        <Box sx={{ display: "flex" }}>
-          <Grid sx={{ flexGrow: 1 }} />
-          {index === instances ? (
+          ) : null}
+          {fieldType === "fileUpload" ? (
+            <NoneEditable text="File upload" icon={<UploadFileIcon />} />
+          ) : null}
+          {fieldType === "date" ? (
+            <NoneEditable text="Date " icon={<EventOutlinedIcon />} />
+          ) : null}
+          {fieldType === "time" ? (
+            <NoneEditable text="Time " icon={<AccessTimeIcon />} />
+          ) : null}
+          {fieldType === "location" ? (
+            <NoneEditable
+              text="location"
+              icon={<AddLocationAltOutlinedIcon />}
+            />
+          ) : null}
+          <Box sx={{ display: "flex" }}>
+            <Grid sx={{ flexGrow: 1 }} />
+            <Button
+              variant="contained"
+              sx={{ m: 1, mb: 0, textTransform: "none", width: 100 }}
+              disabled={!name || !instruction || saved || loading}
+              onClick={registerField}
+            >
+              {!loading ? (saved ? "Saved" : "Save") : "Loading"}
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{ m: 1, mb: 0, textTransform: "none", color: "#e57373" }}
+              onClick={deleteField}
+            >
+              Remove
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+
+      <Box sx={{ display: "flex" }}>
+        <Grid sx={{ flexGrow: 1 }} />
+        {index === instances ? (
+          <Tooltip title="Add another field">
             <Fab
               aria-label="add option"
               sx={{ backgroundColor: "#fff", m: 1 }}
@@ -331,9 +331,9 @@ export default function EditDataField(props: Props) {
             >
               <AddIcon />
             </Fab>
-          ) : null}
-        </Box>
-      </Grid>
+          </Tooltip>
+        ) : null}
+      </Box>
     </Grid>
   );
 }
