@@ -36,13 +36,13 @@ For secure storage of project files such as images, Web3 Storage was integrated 
 **Hardhat for Testing and Deployment:**
 The development process of the smart contract was facilitated by Hardhat, which provides a comprehensive set of tools for testing and deploying Ethereum smart contracts. Hardhat ensured efficient testing and deployment of the smart contract defining the dataset purchase and reward mechanisms. The smart contract was deployed on the Filecoin virtual machine, leveraging the security and scalability of the Filecoin network.
 
-### Deployed on
+## Deployed on
 
 **Web Url:** https://jamiilab.vercel.app/
 
 **Deployed smart contract adddress:** 0xF5b81Fe0B6F378f9E6A3fb6A6cD1921FCeA11799
 
-### Running it locally
+## Running it locally
 
 First, install dependencies
 
