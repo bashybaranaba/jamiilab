@@ -166,6 +166,7 @@ export default function AppNavBar() {
             sx={{ fontWeight: 600, color: "#263238" }}
           >
             JamiiLab
+            <ScienceOutlinedIcon color="primary" />
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Button
