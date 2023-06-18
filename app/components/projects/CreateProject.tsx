@@ -131,6 +131,7 @@ export default function CreateProject(props: Props) {
         sx={{
           textTransform: "none",
           display: minimized ? "none" : "flex",
+          m: 2,
         }}
       >
         Create new project

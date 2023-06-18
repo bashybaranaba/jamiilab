@@ -243,7 +243,7 @@ export default function AppNavBar() {
           <ListItem
             key={1}
             component={Link}
-            href="achievements"
+            href=""
             disablePadding
             sx={{
               display: "block",
