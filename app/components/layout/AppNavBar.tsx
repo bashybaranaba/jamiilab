@@ -176,7 +176,7 @@ export default function AppNavBar() {
           >
             {!authenticated ? (
               loadingAuth ? (
-                <CircularProgress size={20} sx={{ color: "#fff" }} />
+                <CircularProgress size={20} />
               ) : (
                 "Connect wallet"
               )
