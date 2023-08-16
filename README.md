@@ -1,4 +1,4 @@
-## Arttribute
+## JamiiLab
 
 Jamii Lab is a decentralized citizen science platform that allows individuals or organizations to create projects where contributors help generate valuable datasets. By implementing a purchase model for datasets, the platform ensures that contributors are rewarded proportionately for their data contributions.
 
